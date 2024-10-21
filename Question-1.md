@@ -23,3 +23,48 @@ In MediaPipe, hand landmarks refer to the precise points or landmarks detected o
 ### Reference material
 https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker
 https://pypi.org/project/mediapipe/
+
+
+
+import cv2
+import mediapipe as mp
+
+mp_drawing = mp.solutions.drawing_utils
+mp_hands = mp.solutions.hands
+
+# Initialize MediaPipe Hands
+hands = mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=2,
+    )
+
+# Start the webcam
+cap = cv2.VideoCapture(0)
+
+while True:
+    success, image = cap.read()
+    image = cv2.flip(image, 1)
+
+    
+    results = hands.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+
+    
+    if results.multi_hand_landmarks:
+        for hand_landmarks in results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(
+                image,
+                hand_landmarks,
+                mp_hands.HAND_CONNECTIONS,
+                
+            )
+
+    
+    cv2.imshow('Hand Detection', image)
+
+    
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+
+cap.release()
+cv2.destroyAllWindows()
